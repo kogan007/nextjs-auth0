@@ -13,7 +13,7 @@ function getRedirectUri(config: Config): string {
   return urlJoin(config.baseURL, config.routes.callback);
 }
 
-export type HandleLogin = (req: IncomingMessage, res: ServerResponse, options?: LoginOptions) => Promise<void>;
+export type HandleLogin = (req, res: ServerResponse, options?: LoginOptions) => Promise<void>;
 
 export default function loginHandlerFactory(
   config: Config,
@@ -22,13 +22,23 @@ export default function loginHandlerFactory(
 ): HandleLogin {
   return async (req, res, options = {}) => {
     const client = await getClient();
+    const {returnTo: returnURL, pickup, delivery} = req.query;
 
-    const returnTo = options.returnTo || config.baseURL;
+    const formatted = () => {
+      if (pickup && delivery){
+          return returnURL + `&pickup=${pickup}` + `&delivery=${delivery}`
+      } else {
+          return returnURL
+      }
+  }
+
+
+    const returnTo = formatted() || config.baseURL;
 
     const opts = {
-      returnTo,
       getLoginState: config.getLoginState,
-      ...options
+      ...options,
+      returnTo
     };
 
     // Ensure a redirect_uri, merge in configuration options, then passed-in options.
