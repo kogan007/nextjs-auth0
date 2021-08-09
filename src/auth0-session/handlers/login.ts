@@ -1,4 +1,4 @@
-import { IncomingMessage, ServerResponse } from 'http';
+import { ServerResponse } from 'http';
 import urlJoin from 'url-join';
 import { strict as assert } from 'assert';
 import { Config, LoginOptions } from '../config';
@@ -13,7 +13,7 @@ function getRedirectUri(config: Config): string {
   return urlJoin(config.baseURL, config.routes.callback);
 }
 
-export type HandleLogin = (req, res: ServerResponse, options?: LoginOptions) => Promise<void>;
+export type HandleLogin = (req: any, res: ServerResponse, options?: LoginOptions) => Promise<void>;
 
 export default function loginHandlerFactory(
   config: Config,
